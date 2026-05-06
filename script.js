@@ -1,238 +1,145 @@
-// ============================================
-// ORBITON - INTERACTIVE SCRIPT
-// ============================================
+const revealItems = document.querySelectorAll(".reveal");
 
-// Modal functionality
-const modal = document.getElementById("waitlist-modal");
-const modalButtons = document.querySelectorAll(
-  '[data-modal-target="waitlist-modal"]',
-);
-const closeButton = modal.querySelector(".modal-close");
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.16, rootMargin: "0px 0px -40px 0px" },
+  );
 
-// Open modal
-modalButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
+  revealItems.forEach((item) => observer.observe(item));
+} else {
+  revealItems.forEach((item) => item.classList.add("in-view"));
+}
+
+const form = document.getElementById("waitlist-form");
+const toast = document.getElementById("waitlist-toast");
+const modal = document.getElementById("confirm-modal");
+const modalClose = document.getElementById("confirm-close");
+const passImage = document.getElementById("waitlist-pass");
+const downloadPass = document.getElementById("download-pass");
+const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID";
+const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID";
+
+const hasEmailJsConfig = () =>
+  ![
+    EMAILJS_PUBLIC_KEY,
+    EMAILJS_SERVICE_ID,
+    EMAILJS_TEMPLATE_ID,
+  ].some((value) => value.startsWith("YOUR_EMAILJS_"));
+
+if (window.emailjs && hasEmailJsConfig()) {
+  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
+const sendWaitlistEmail = async ({ email, passData }) => {
+  if (!window.emailjs || !hasEmailJsConfig()) {
+    return { skipped: true };
+  }
+
+  await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: "your@email.com",
+    user_email: email,
+    pass_preview: passData,
+    source: "Orbiton Waitlist Form",
+    submitted_at: new Date().toISOString(),
   });
-});
 
-// Close modal
-const closeModal = () => {
-  modal.classList.remove("active");
-  document.body.style.overflow = "auto";
+  return { skipped: false };
 };
 
-closeButton.addEventListener("click", closeModal);
+const showToast = (message) => {
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  window.setTimeout(() => toast.classList.remove("show"), 2800);
+};
 
-modal.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    closeModal();
-  }
+const makePassImage = (email) => {
+  const safeEmail = email.replace(/[<>&'"]/g, "");
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560">
+      <defs>
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0a1730" />
+          <stop offset="100%" stop-color="#06101f" />
+        </linearGradient>
+        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#36d4ff" />
+          <stop offset="100%" stop-color="#1498ff" />
+        </linearGradient>
+      </defs>
+      <rect width="980" height="560" rx="30" fill="url(#g1)" />
+      <circle cx="795" cy="122" r="96" fill="none" stroke="#2ed0ff" stroke-opacity=".35" />
+      <circle cx="795" cy="122" r="64" fill="none" stroke="#2ed0ff" stroke-opacity=".24" />
+      <circle cx="858" cy="122" r="8" fill="#57dcff" />
+      <text x="70" y="120" fill="#b8ddff" font-family="IBM Plex Sans, Arial, sans-serif" font-size="24">Orbiton Waitlist</text>
+      <text x="70" y="210" fill="#ecf2ff" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="62" font-weight="700">Seat Secured</text>
+      <text x="70" y="278" fill="#9cb4d1" font-family="IBM Plex Sans, Arial, sans-serif" font-size="28">${safeEmail}</text>
+      <rect x="70" y="336" width="390" height="56" rx="28" fill="url(#g2)" />
+      <text x="105" y="373" fill="#04203f" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="25" font-weight="700">EARLY ACCESS MEMBER</text>
+      <text x="70" y="470" fill="#7f99b7" font-family="IBM Plex Sans, Arial, sans-serif" font-size="20">From first commit to launch</text>
+    </svg>
+  `;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+};
+
+const openModal = () => {
+  modal?.classList.add("open");
+  modal?.setAttribute("aria-hidden", "false");
+};
+
+const closeModal = () => {
+  modal?.classList.remove("open");
+  modal?.setAttribute("aria-hidden", "true");
+};
+
+modalClose?.addEventListener("click", closeModal);
+modal?.addEventListener("click", (event) => {
+  if (event.target === modal) closeModal();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeModal();
 });
 
-// Close modal on Escape key
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && modal.classList.contains("active")) {
-    closeModal();
-  }
-});
-
-// Form submission
-const emailForm = document.getElementById("email-form");
-const modalForm = document.getElementById("modal-form");
-
-const handleFormSubmit = (e, formElement) => {
-  e.preventDefault();
-
-  const emailInput = formElement.querySelector('input[type="email"]');
-  const email = emailInput.value;
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = form.querySelector("button");
+  const input = form.querySelector("input[type='email']");
+  const email = input.value.trim();
+  const originalText = button.textContent;
 
   if (!email) return;
 
-  // Create a success message
-  const button = formElement.querySelector('button[type="submit"]');
-  const originalText = button.textContent;
-
-  button.textContent = "✓ Added to waitlist!";
-  button.style.opacity = "0.8";
   button.disabled = true;
+  button.textContent = "Secured";
 
-  // Simulate API call (in production, this would be a real API)
-  setTimeout(() => {
-    console.log("Submitted email:", email);
+  setTimeout(async () => {
+    const passData = makePassImage(email);
 
-    // Reset form
-    emailInput.value = "";
-    button.textContent = originalText;
-    button.style.opacity = "1";
+    try {
+      await sendWaitlistEmail({ email, passData });
+    } catch (error) {
+      showToast("Saved locally. Email send failed, please try again.");
+      button.disabled = false;
+      button.textContent = originalText;
+      return;
+    }
+
+    if (passImage) passImage.src = passData;
+    if (downloadPass) downloadPass.href = passData;
+    showToast("You're on the waitlist. Confirmation ready.");
+    openModal();
+
     button.disabled = false;
-
-    // Close modal if it was opened via modal
-    if (formElement === modalForm) {
-      closeModal();
-    }
-  }, 1500);
-};
-
-emailForm.addEventListener("submit", (e) => handleFormSubmit(e, emailForm));
-modalForm.addEventListener("submit", (e) => handleFormSubmit(e, modalForm));
-
-// Intersection Observer for fade-in animations on scroll
-const observerOptions = {
-  threshold: 0.1,
-  rootMargin: "0px 0px -50px 0px",
-};
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("in-view");
-      observer.unobserve(entry.target);
-    }
-  });
-}, observerOptions);
-
-// Observe all sections
-document.querySelectorAll("section").forEach((section) => {
-  section.classList.add("section-observe");
-  observer.observe(section);
+    button.textContent = originalText;
+    input.value = "";
+  }, 1400);
 });
-
-// Observe problem cards
-document.querySelectorAll(".problem-card").forEach((card, index) => {
-  card.style.animation = `fade-in 0.8s ease-out ${index * 0.15}s both`;
-  observer.observe(card);
-});
-
-// Observe solution cards
-document.querySelectorAll(".solution-card").forEach((card, index) => {
-  card.style.animation = `fade-in 0.8s ease-out ${index * 0.15}s both`;
-  observer.observe(card);
-});
-
-// Observe feature cards
-document.querySelectorAll(".feature-card").forEach((card, index) => {
-  card.style.animation = `fade-in 0.8s ease-out ${index * 0.2}s both`;
-  observer.observe(card);
-});
-
-// Smooth scroll to sections
-document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-  anchor.addEventListener("click", function (e) {
-    const href = this.getAttribute("href");
-    if (href !== "#" && document.querySelector(href)) {
-      e.preventDefault();
-      const target = document.querySelector(href);
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  });
-});
-
-// Add active state to logo click (scroll to top)
-document.querySelector(".logo").addEventListener("click", () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-});
-
-// Keyboard navigation for accessibility
-document.addEventListener("keydown", (e) => {
-  // Alt + W for waitlist (accessibility shortcut)
-  if (e.altKey && e.key.toLowerCase() === "w") {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
-    document.querySelector(".modal-input").focus();
-  }
-});
-
-// ============================================
-// ORBITAL ANIMATION ENHANCEMENTS
-// ============================================
-
-// Add subtle parallax effect to orbital background on mouse move
-const hero = document.querySelector(".hero");
-const orbitalBg = document.querySelector(".orbital-bg");
-
-if (hero && orbitalBg) {
-  hero.addEventListener("mousemove", (e) => {
-    const rect = hero.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const moveX = (x - rect.width / 2) * 0.02;
-    const moveY = (y - rect.height / 2) * 0.02;
-
-    orbitalBg.style.transform = `translate(${moveX}px, ${moveY}px)`;
-  });
-
-  hero.addEventListener("mouseleave", () => {
-    orbitalBg.style.transform = "translate(0, 0)";
-  });
-}
-
-// ============================================
-// PERFORMANCE OPTIMIZATION
-// ============================================
-
-// Lazy load images if any (for future use)
-if ("IntersectionObserver" in window) {
-  const imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.classList.remove("lazy");
-        imageObserver.unobserve(img);
-      }
-    });
-  });
-
-  document.querySelectorAll("img[data-src]").forEach((img) => {
-    imageObserver.observe(img);
-  });
-}
-
-// ============================================
-// ANALYTICS HOOKS (for future integration)
-// ============================================
-
-// Track button clicks
-document.querySelectorAll(".cta-button").forEach((button) => {
-  button.addEventListener("click", (e) => {
-    const buttonText = button.textContent;
-    console.log("CTA Button clicked:", buttonText);
-    // In production, send to analytics service
-  });
-});
-
-// Track form submissions
-document.addEventListener("submit", (e) => {
-  const form = e.target;
-  const email = form.querySelector('input[type="email"]')?.value;
-  if (email) {
-    console.log("Form submitted with email:", email);
-    // In production, send to analytics service
-  }
-});
-
-// ============================================
-// ACCESSIBILITY ENHANCEMENTS
-// ============================================
-
-// Add focus visible styles for keyboard navigation
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Tab") {
-    document.body.classList.add("keyboard-nav");
-  }
-});
-
-document.addEventListener("mousedown", () => {
-  document.body.classList.remove("keyboard-nav");
-});
-
-console.log("Orbiton landing page loaded successfully ✨");
