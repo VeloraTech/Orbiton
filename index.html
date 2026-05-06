@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbiton - Collaboration Built for Developers</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="logo">
+          <span class="logo-text">Orbiton</span>
+        </div>
+        <button class="cta-button nav-cta">Join the Waitlist</button>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="orbital-bg">
+        <svg
+          class="orbital-svg"
+          viewBox="0 0 800 800"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Orbital rings -->
+          <circle cx="400" cy="400" r="120" class="orbital-ring ring-1" />
+          <circle cx="400" cy="400" r="200" class="orbital-ring ring-2" />
+          <circle cx="400" cy="400" r="280" class="orbital-ring ring-3" />
+
+          <!-- Glowing orbs on orbits -->
+          <circle cx="520" cy="400" r="8" class="orbiting-dot dot-1" />
+          <circle cx="400" cy="120" r="6" class="orbiting-dot dot-2" />
+          <circle cx="280" cy="400" r="7" class="orbiting-dot dot-3" />
+          <circle cx="400" cy="680" r="5" class="orbiting-dot dot-4" />
+        </svg>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-headline">
+          Your clients have no idea what you're building.
+          <span class="glow">Orbiton</span> changes that.
+        </h1>
+        <p class="hero-subheadline">
+          The collaboration tool built for developers and their clients. One
+          place to call, track progress, manage projects and push code — without
+          switching tabs.
+        </p>
+
+        <div class="cta-wrapper">
+          <button class="cta-button primary" data-modal-target="waitlist-modal">
+            Join the Waitlist — It's Free
+          </button>
+          <p class="cta-disclaimer">🔒 No spam. Just Orbiton updates.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+      <div class="container">
+        <div class="section-label">Sound familiar?</div>
+
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="problem-icon">😤</div>
+            <p class="problem-text">
+              Your client keeps asking for updates you've already sent three
+              times.
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <div class="problem-icon">😤</div>
+            <p class="problem-text">
+              You're juggling Slack, Zoom, GitHub, Notion and Figma just to
+              manage one project.
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <div class="problem-icon">😤</div>
+            <p class="problem-text">
+              You did the work. Your client has no idea how much went into it.
+            </p>
+          </div>
+        </div>
+
+        <p class="problem-closing">
+          You're not disorganised. You just don't have the right tool.
+        </p>
+      </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution" id="solution">
+      <div class="container">
+        <h2 class="section-headline">
+          Orbiton brings everything into one orbit.
+        </h2>
+
+        <div class="solution-grid">
+          <div class="solution-card">
+            <div class="solution-icon">✅</div>
+            <p class="solution-text">
+              Your client sees your progress in real time. No more update calls.
+            </p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-icon">✅</div>
+            <p class="solution-text">
+              Call, collaborate and push code without leaving the app.
+            </p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-icon">✅</div>
+            <p class="solution-text">
+              Every project. Every developer. Every deadline. One place.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-headline">What's inside.</h2>
+
+        <div class="features-grid">
+          <!-- Free Plan -->
+          <div class="feature-card free">
+            <div class="plan-header">
+              <h3 class="plan-name">Free — Always</h3>
+            </div>
+            <ul class="feature-list">
+              <li>
+                <span class="check">✓</span>Unlimited projects and collaborators
+              </li>
+              <li><span class="check">✓</span>Voice and video calls</li>
+              <li><span class="check">✓</span>Progress tracking</li>
+              <li>
+                <span class="check">✓</span>Built in repo — push code natively
+                inside Orbiton
+              </li>
+            </ul>
+          </div>
+
+          <!-- Premium Plan -->
+          <div class="feature-card premium">
+            <div class="premium-badge">Recommended</div>
+            <div class="plan-header">
+              <h3 class="plan-name">Premium — When you're ready</h3>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span>Screen sharing</li>
+              <li>
+                <span class="check">✓</span>Client portal — clients watch your
+                progress live
+              </li>
+              <li>
+                <span class="check">✓</span>Figma and third party integrations
+              </li>
+              <li><span class="check">✓</span>Advanced session analytics</li>
+              <li>
+                <span class="check">✓</span>AI agent
+                <span class="coming-soon">(coming soon)</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Waitlist CTA Section -->
+    <section class="final-cta" id="final-cta">
+      <div class="orbital-bg-bottom">
+        <svg
+          class="orbital-svg-bottom"
+          viewBox="0 0 800 800"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="400"
+            cy="400"
+            r="150"
+            class="orbital-ring-bottom ring-1"
+          />
+          <circle
+            cx="400"
+            cy="400"
+            r="250"
+            class="orbital-ring-bottom ring-2"
+          />
+          <circle cx="550" cy="400" r="8" class="orbiting-dot-bottom dot-1" />
+          <circle cx="400" cy="150" r="6" class="orbiting-dot-bottom dot-2" />
+        </svg>
+      </div>
+
+      <div class="container final-cta-content">
+        <h2 class="cta-headline">Be the first inside Orbiton.</h2>
+        <p class="cta-subheadline">
+          We're building this in public. Join the waitlist and watch Orbiton
+          come to life — from first commit to full launch.
+        </p>
+
+        <div class="email-form-wrapper">
+          <form class="email-form" id="email-form">
+            <input
+              type="email"
+              class="email-input"
+              placeholder="your@email.com"
+              required
+            />
+            <button type="submit" class="cta-button primary">
+              Secure My Spot
+            </button>
+          </form>
+        </div>
+
+        <p class="form-disclaimer">
+          🔒 No spam. No noise. Just Orbiton updates.
+        </p>
+      </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal" id="waitlist-modal">
+      <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <h2>Join the Orbiton Waitlist</h2>
+        <p>Be the first to experience the future of collaboration.</p>
+        <form class="modal-form" id="modal-form">
+          <input
+            type="email"
+            class="modal-input"
+            placeholder="your@email.com"
+            required
+          />
+          <button type="submit" class="cta-button primary">
+            Secure My Spot
+          </button>
+        </form>
+        <p class="form-disclaimer">
+          🔒 No spam. No noise. Just Orbiton updates.
+        </p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
